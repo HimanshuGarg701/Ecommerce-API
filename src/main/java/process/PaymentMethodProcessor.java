@@ -1,7 +1,5 @@
 package process;
 
-//import DAO.PaymentMethodDAO;
-
 import Mongo_db.MongoDB_consts;
 
 import com.mongodb.MongoClient;
@@ -29,7 +27,7 @@ public class PaymentMethodProcessor implements Processor {
 
     public ResponseDTO process() {
         String responseCode;
-        ArrayList<DTO> response = new ArrayList<>();
+        ArrayList<Document> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
@@ -40,14 +38,14 @@ public class PaymentMethodProcessor implements Processor {
             MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
             MongoCollection<Document> myColection = db.getCollection(mdb_const.paymentMethod_col);
             long machine_code = myColection.count();
-            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(machine_code, arguments.get("method"));
             Document doc = new Document("machine_code",machine_code).append("name", arguments.get("method"));
             myColection.insertOne(doc);
-            response.add(paymentMethod);
+            response.add(doc);
             responseCode = "OK";
         } catch (Exception e) {
             responseCode = "Error";
         }
+        System.out.println(response);
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
         return rbh.build();
@@ -56,9 +54,9 @@ public class PaymentMethodProcessor implements Processor {
 
 //    public static void main(String[] args) {
 //        HashMap<String, String> arg = new HashMap<String, String>();
-//        arg.put("method","blah");
+//        arg.put("method"," new blah");
 //        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
-//        p.process();
+//        System.out.println(p.process());
 //
 //    }
 }
