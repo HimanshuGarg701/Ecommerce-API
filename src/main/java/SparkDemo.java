@@ -3,7 +3,13 @@ import static spark.Spark.*;
 import builder.ResponseBuilder;
 import builder.ResponseDto;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
+
+import process.CreateTransactions;
+import process.ItemsProcessor;
+import process.PaymentMethodProcessor;
+import process.Processor;
 import spark.Request;
 import spark.Response;
 
@@ -22,6 +28,17 @@ public class SparkDemo {
     return "done!";
   }
 
+  public static HashMap<String, String> factory(Request req, Response res){
+    Set<String> params = req.queryParams();
+    HashMap<String, String> map = new HashMap<>();
+    for (String param : params) {
+      // possible for query param to be an array
+      System.out.println(param + " : " + req.queryParamsValues(param)[0]);
+      map.put(param, req.queryParamsValues(param)[0]);
+    }
+    return map;
+  }
+
   public static void main(String[] args) {
     port(1234);
     // calling get will make your app start listening for the GET path with the /hello endpoint
@@ -29,26 +46,33 @@ public class SparkDemo {
       .setDate(new Date())
       .setName("Hello world");
     ResponseDto dto = builder.build();
-    get("/hello", (req, res) -> "Hello World");
 
-    post("/post-handler", (req, res) -> {
-      System.out.print(req.headers());
-      return "This is a post handler";
-    });
 
-    // Slightly more advanced routing
-    path("/api", () -> {
-      get("/users", (req, res) -> {
-        // put more stuff here
-        return "This one has a block body";
-      });
-      get("/test", (req, res) -> {
-        System.out.println(req.headers());
-        System.out.println(req.userAgent());
-        return "Worked!";
-      });
-      get("/posts", SparkDemo::processRoute);
-      get("/lambda", (req, res) -> SparkDemo.processRoute(req, res));
-    });
+
+
+    //final HashMap<String, String> z;
+    get("/addItem", SparkDemo::addItem);
+    get("/addPaymentMethod", SparkDemo::addPaymentMethod);
+    get("/createTransaction", SparkDemo::createTransaction);
+
+
+  }
+
+  private static Object addItem(Request req, Response res) {
+    HashMap<String, String> map = factory(req, res);
+    Processor userRequest = new ItemsProcessor(map);
+    return "Wohooooooo";
+  }
+
+  private static Object addPaymentMethod(Request req, Response res){
+    HashMap<String, String> map = factory(req, res);
+    Processor userRequest = new PaymentMethodProcessor(map);
+    return "ohooooo";
+  }
+
+  private static Object createTransaction(Request req, Response res){
+    HashMap<String, String> map = factory(req, res);
+    Processor userRequest = new CreateTransactions(map);
+    return "zingaaallaa";
   }
 }
