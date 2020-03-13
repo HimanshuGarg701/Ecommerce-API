@@ -1,15 +1,9 @@
 package process;
 
-//import DAO.PaymentMethodDAO;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-
-import static com.mongodb.client.model.Filters.*;
+import Mongo_db.MongoDB_consts;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
@@ -33,41 +27,36 @@ public class PaymentMethodProcessor implements Processor {
 
     public ResponseDTO process() {
         String responseCode;
-        ArrayList<DTO> response = new ArrayList<>();
+        ArrayList<Document> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
         try {
-//            PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
-//            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
-//            paymentmethoddao.addPaymentMethod(paymentMethod);
+            MongoDB_consts mdb_const = new MongoDB_consts();
 
-
-            MongoClient mongoClient = new MongoClient("localhost", 27017);
-            MongoDatabase db = mongoClient.getDatabase("csc-415");
-            MongoCollection<Document> myColection = db.getCollection("PaymentMethod");
-            Document doc = new Document("name", arguments.get("method"));
+            MongoClient mongoClient = new MongoClient(mdb_const.host, mdb_const.port);
+            MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
+            MongoCollection<Document> myColection = db.getCollection(mdb_const.paymentMethod_col);
+            long machine_code = myColection.count();
+            Document doc = new Document("machine_code",machine_code).append("name", arguments.get("method"));
             myColection.insertOne(doc);
-
-
-
-
-//            response.add(paymentMethod);
+            response.add(doc);
             responseCode = "OK";
         } catch (Exception e) {
             responseCode = "Error";
         }
+        System.out.println(response);
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
         return rbh.build();
     }
 
 
-    public static void main(String[] args) {
-        HashMap<String, String> arg = new HashMap<String, String>();
-        arg.put("method","blah");
-        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
-        p.process();
-
-    }
+//    public static void main(String[] args) {
+//        HashMap<String, String> arg = new HashMap<String, String>();
+//        arg.put("method"," new blah");
+//        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
+//        System.out.println(p.process());
+//
+//    }
 }
