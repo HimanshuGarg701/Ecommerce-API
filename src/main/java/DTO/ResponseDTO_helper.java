@@ -1,7 +1,5 @@
 package DTO;
 
-import org.bson.Document;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +8,7 @@ public class ResponseDTO_helper {
     private String date;
     private HashMap<String, String> params;
     private String responseCode;
-    private ArrayList<Document> response;
+    private ArrayList<DTO> response;
 
     public ResponseDTO_helper() {
         //Empty Constructor
@@ -20,7 +18,7 @@ public class ResponseDTO_helper {
         this.params = params;
     }
 
-    public void setResponse(ArrayList<Document> response) {
+    public void setResponse(ArrayList<DTO> response) {
         this.response = response;
     }
 
