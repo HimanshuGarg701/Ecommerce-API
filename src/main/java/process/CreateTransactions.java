@@ -61,7 +61,7 @@ public class CreateTransactions implements Processor {
             if (itemIsPresent && paymentMethodIsPresent) {
                 responseCode = "Ok";
                 TransactionsDAO transactiondao = TransactionsDAO.getInstance();
-                DTO transaction = new TransactionDTO(transactiondao.getAllTransactions().size(), item.machineCode, PaymentMethod.machineCode);
+                TransactionDTO transaction = new TransactionDTO(transactiondao.getAllTransactions().size(), item.machineCode, PaymentMethod.machineCode);
                 response.add(transaction);
                 transactiondao.addTransaction(transaction);
             }

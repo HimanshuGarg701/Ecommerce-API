@@ -5,21 +5,25 @@ import DTO.PaymentMethodDTO;
 
 import java.util.ArrayList;
 
+import Mongo_db.MongoDB_consts;
+
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
 public class PaymentMethodDAO {
     private static PaymentMethodDAO InstancePaymentDao;
 
     private PaymentMethodDAO() {
-        //Empty Constructor
     }
 
-    /*
-        Created an ArrayList of payment methods.
-        This ArrayList will store all PaymentMethod objects.
-        Each PaymentMethod object holds a name and a machine code.
-     */
-    private ArrayList<DTO> paymentMethodList = new ArrayList<>();
+    private MongoDB_consts mdb_const = new MongoDB_consts();
+    private MongoClient mongoClient = new MongoClient(mdb_const.host, mdb_const.port);
+    private MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
+    private MongoCollection<Document> paymentMethod_collection = db.getCollection(mdb_const.paymentMethod_col);
 
-    // To get the instance of PaymentMethodDao
     public static PaymentMethodDAO getInstance() {
         if (InstancePaymentDao == null) {
             InstancePaymentDao = new PaymentMethodDAO();
@@ -27,24 +31,35 @@ public class PaymentMethodDAO {
         return InstancePaymentDao;
     }
 
-    /*
-        The addPaymentMethod(String methodName) accepts the type of payment method. (Also name parameter of PaymentMethodClass)
-        Since the PaymentMethod class accepts the method name, So I created new object for each payment method
-        and stored all these methods in the ArrayList.
-     */
-    public void addPaymentMethod(PaymentMethodDTO methodName) {
-        paymentMethodList.add(methodName);
+
+    public void addPaymentMethod(PaymentMethodDTO paymentMethod) {
+        Document doc = new Document("machineCode", paymentMethod.machineCode).append("name", paymentMethod.name);
+        paymentMethod_collection.insertOne(doc);
     }
 
-    /*
-        The getAllPaymentMethods() simply returns the list of PaymentMethods.
-     */
+
     public ArrayList<DTO> getAllPaymentMethods() {
+        ArrayList<DTO> paymentMethodList = new ArrayList<>();
+
+        MongoCursor<Document> cursor = paymentMethod_collection.find().iterator();
+        Document doc;
+
+        try {
+            while (cursor.hasNext()) {
+                doc = cursor.next();
+                paymentMethodList.add(new PaymentMethodDTO((long) doc.get("machineCode"), (String) doc.get("name")));
+            }
+        } catch (Throwable err) {
+            System.out.println("error in PaymentMethodDAO: " + err.toString());
+        } finally {
+            cursor.close();
+        }
         return paymentMethodList;
     }
 
-    public int getIndex() {
-        return paymentMethodList.size();
+    public long getIndex() {
+        return paymentMethod_collection.countDocuments();
+
     }
 
 }

@@ -1,12 +1,6 @@
 package process;
 
-import Mongo_db.MongoDB_consts;
-
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-
+import DAO.PaymentMethodDAO;
 import DTO.DTO;
 import DTO.PaymentMethodDTO;
 import DTO.ResponseDTO;
@@ -27,36 +21,22 @@ public class PaymentMethodProcessor implements Processor {
 
     public ResponseDTO process() {
         String responseCode;
-        ArrayList<Document> response = new ArrayList<>();
+        ArrayList<DTO> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
         try {
-            MongoDB_consts mdb_const = new MongoDB_consts();
-
-            MongoClient mongoClient = new MongoClient(mdb_const.host, mdb_const.port);
-            MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
-            MongoCollection<Document> myColection = db.getCollection(mdb_const.paymentMethod_col);
-            long machine_code = myColection.count();
-            Document doc = new Document("machine_code",machine_code).append("name", arguments.get("method"));
-            myColection.insertOne(doc);
-            response.add(doc);
+            PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
+            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
+            response.add(paymentMethod);
+            paymentmethoddao.addPaymentMethod(paymentMethod);
             responseCode = "OK";
         } catch (Exception e) {
             responseCode = "Error";
         }
-        System.out.println(response);
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
         return rbh.build();
     }
-
-
-//    public static void main(String[] args) {
-//        HashMap<String, String> arg = new HashMap<String, String>();
-//        arg.put("method"," new blah");
-//        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
-//        System.out.println(p.process());
-//
-//    }
 }
+
