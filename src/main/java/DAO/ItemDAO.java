@@ -40,21 +40,17 @@ public class ItemDAO {
     public ArrayList<DTO> getAllItems() {
         ArrayList<DTO> itemsList = new ArrayList<>();
 
-        MongoCursor<Document> cursor = item_collection.find().iterator();
-        Document doc;
-
-        try {
+        try (MongoCursor<Document> cursor = item_collection.find().iterator()) {
+            Document doc;
             while (cursor.hasNext()) {
                 doc = cursor.next();
                 itemsList.add(new ItemDTO(
                         (long) doc.get("machineCode"),
                         (String) doc.get("name"),
-                        (long) doc.get("price")));
+                        (String) (doc.get("price"))));
             }
         } catch (Throwable err) {
             System.out.println("error in ItemDAO: " + err.toString());
-        } finally {
-            cursor.close();
         }
         return itemsList;
     }

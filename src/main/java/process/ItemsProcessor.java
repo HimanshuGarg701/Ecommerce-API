@@ -26,7 +26,7 @@ public class ItemsProcessor implements Processor {
         rbh.setParameters(arguments);
         try {
             ItemDAO itemdao = ItemDAO.getInstance();
-            ItemDTO item = new ItemDTO(itemdao.getIndex(), arguments.get("name"), Double.valueOf(arguments.get("price")));
+            ItemDTO item = new ItemDTO(itemdao.getIndex(), arguments.get("name"), (arguments.get("price")));
             itemdao.addItem(item);
             response.add(item);
             responseCode = "OK";
