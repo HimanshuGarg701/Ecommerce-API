@@ -2,6 +2,7 @@ package process;
 
 //import DAO.PaymentMethodDAO;
 
+import DAO.PaymentMethodDAO;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 
@@ -39,21 +40,10 @@ public class PaymentMethodProcessor implements Processor {
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
         try {
-//            PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
-//            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
-//            paymentmethoddao.addPaymentMethod(paymentMethod);
-
-
-            MongoClient mongoClient = new MongoClient("localhost", 27017);
-            MongoDatabase db = mongoClient.getDatabase("csc-415");
-            MongoCollection<Document> myColection = db.getCollection("PaymentMethod");
-            Document doc = new Document("name", arguments.get("method"));
-            myColection.insertOne(doc);
-
-
-
-
-//            response.add(paymentMethod);
+            PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
+            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
+            paymentmethoddao.addPaymentMethod(paymentMethod);
+            response.add(paymentMethod);
             responseCode = "OK";
         } catch (Exception e) {
             responseCode = "Error";
