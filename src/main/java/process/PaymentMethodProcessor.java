@@ -34,19 +34,21 @@ public class PaymentMethodProcessor implements Processor {
 
 
     public ResponseDTO process() {
-        String responseCode;
+        String responseCode = "Error";
         ArrayList<DTO> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
-        try {
-            PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
-            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
-            paymentmethoddao.addPaymentMethod(paymentMethod);
-            response.add(paymentMethod);
-            responseCode = "OK";
-        } catch (Exception e) {
-            responseCode = "Error";
+        if (!(arguments.get("method") == null || arguments.get("method").equals(""))) {
+            try {
+                PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
+                PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
+                paymentmethoddao.addPaymentMethod(paymentMethod);
+                response.add(paymentMethod);
+                responseCode = "OK";
+            } catch (Exception e) {
+                responseCode = "Error";
+            }
         }
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
@@ -56,7 +58,7 @@ public class PaymentMethodProcessor implements Processor {
 
     public static void main(String[] args) {
         HashMap<String, String> arg = new HashMap<String, String>();
-        arg.put("method","blah");
+        arg.put("method", "blah");
         PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
         p.process();
 

@@ -19,19 +19,22 @@ public class ItemsProcessor implements Processor {
     }
 
     public ResponseDTO process() {
-        String responseCode;
+        String responseCode = "Error";
         ArrayList<DTO> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
-        try {
-            ItemDAO itemdao = ItemDAO.getInstance();
-            ItemDTO item = new ItemDTO(itemdao.getIndex(), arguments.get("name"), (arguments.get("price")));
-            itemdao.addItem(item);
-            response.add(item);
-            responseCode = "OK";
-        } catch (Exception e) {
-            responseCode = "Error";
+        if (!(arguments.get("name") == null || arguments.get("price") == null
+                || arguments.get("name").equals("") || arguments.get("price").equals(""))) {
+            try {
+                ItemDAO itemdao = ItemDAO.getInstance();
+                ItemDTO item = new ItemDTO(itemdao.getIndex(), arguments.get("name"), (arguments.get("price")));
+                itemdao.addItem(item);
+                response.add(item);
+                responseCode = "OK";
+            } catch (Exception e) {
+                responseCode = "Error";
+            }
         }
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);

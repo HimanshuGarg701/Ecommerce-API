@@ -28,45 +28,48 @@ public class CreateTransactions implements Processor {
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
-        try {
-            boolean itemIsPresent = false;
-            int counter = 0;
+        if (!(arguments.get("itemCode") == null || arguments.get("paymentMethod") == null
+                || arguments.get("itemCode").equals("") || arguments.get("paymentMethod").equals(""))) {
+            try {
+                boolean itemIsPresent = false;
+                int counter = 0;
 
 //             check if the item exist
-            ArrayList<DTO> allItems = ItemDAO.getInstance().getAllItems();
-            int length = allItems.size();
-            ItemDTO item = null;
-            while (counter < length) {
-                item = (ItemDTO) allItems.get(counter);
-                if (arguments.get("itemCode").equals(String.valueOf(item.machineCode))) {
-                    itemIsPresent = true;
-                    break;
+                ArrayList<DTO> allItems = ItemDAO.getInstance().getAllItems();
+                int length = allItems.size();
+                ItemDTO item = null;
+                while (counter < length) {
+                    item = (ItemDTO) allItems.get(counter);
+                    if (arguments.get("itemCode").equals(String.valueOf(item.machineCode))) {
+                        itemIsPresent = true;
+                        break;
+                    }
+                    counter++;
                 }
-                counter++;
-            }
-            boolean paymentMethodIsPresent = false;
-            ArrayList<DTO> allPaymentMethods = PaymentMethodDAO.getInstance().getAllPaymentMethods();
-            PaymentMethodDTO PaymentMethod = null;
-            counter = 0;
-            length = allPaymentMethods.size();
-            while (counter < length) {
-                PaymentMethod = (PaymentMethodDTO) allPaymentMethods.get(counter);
-                if (arguments.get("paymentMethod").equals(String.valueOf(PaymentMethod.machineCode))) {
-                    paymentMethodIsPresent = true;
-                    break;
+                boolean paymentMethodIsPresent = false;
+                ArrayList<DTO> allPaymentMethods = PaymentMethodDAO.getInstance().getAllPaymentMethods();
+                PaymentMethodDTO PaymentMethod = null;
+                counter = 0;
+                length = allPaymentMethods.size();
+                while (counter < length) {
+                    PaymentMethod = (PaymentMethodDTO) allPaymentMethods.get(counter);
+                    if (arguments.get("paymentMethod").equals(String.valueOf(PaymentMethod.machineCode))) {
+                        paymentMethodIsPresent = true;
+                        break;
+                    }
+                    counter++;
                 }
-                counter++;
-            }
 
-            if (itemIsPresent && paymentMethodIsPresent) {
-                responseCode = "Ok";
-                TransactionsDAO transactiondao = TransactionsDAO.getInstance();
-                TransactionDTO transaction = new TransactionDTO(transactiondao.getAllTransactions().size(), item.machineCode, PaymentMethod.machineCode);
-                response.add(transaction);
-                transactiondao.addTransaction(transaction);
+                if (itemIsPresent && paymentMethodIsPresent) {
+                    responseCode = "Ok";
+                    TransactionsDAO transactiondao = TransactionsDAO.getInstance();
+                    TransactionDTO transaction = new TransactionDTO(transactiondao.getAllTransactions().size(), item.machineCode, PaymentMethod.machineCode);
+                    response.add(transaction);
+                    transactiondao.addTransaction(transaction);
+                }
+            } catch (Exception e) {
+                responseCode = "Error";
             }
-        } catch (Exception e) {
-            responseCode = "Error";
         }
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
