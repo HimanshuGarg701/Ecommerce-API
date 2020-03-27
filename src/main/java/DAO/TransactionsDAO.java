@@ -3,6 +3,7 @@ package DAO;
 import DTO.DTO;
 import DTO.TransactionDTO;
 import Mongo_db.MongoDB_consts;
+import Mongo_db.dbConnection;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -16,11 +17,9 @@ public class TransactionsDAO {
 
     private TransactionsDAO() {
     }
-
-    private MongoDB_consts mdb_const = new MongoDB_consts();
-    private MongoClient mongoClient = new MongoClient(mdb_const.host, mdb_const.port);
-    private MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
-    private MongoCollection<Document> transaction_collection = db.getCollection(mdb_const.transaction_col);
+    private MongoClient mongoClient = dbConnection.mongoClient;
+    private MongoDatabase db = mongoClient.getDatabase(MongoDB_consts.db_name);
+    private MongoCollection<Document> transaction_collection = db.getCollection(MongoDB_consts.transaction_col);
 
     public static TransactionsDAO getInstance() {
         if (InstanceTransactionsDAO == null) {
