@@ -2,10 +2,15 @@ package process;
 
 //import DAO.PaymentMethodDAO;
 
-import Mongo_db.MongoDB_consts;
+import DAO.PaymentMethodDAO;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+
+import static com.mongodb.client.model.Filters.*;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
@@ -13,6 +18,7 @@ import DTO.DTO;
 import DTO.PaymentMethodDTO;
 import DTO.ResponseDTO;
 import DTO.ResponseDTO_helper;
+import process.Processor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,25 +34,21 @@ public class PaymentMethodProcessor implements Processor {
 
 
     public ResponseDTO process() {
-        String responseCode;
+        String responseCode = "Error";
         ArrayList<DTO> response = new ArrayList<>();
         ResponseDTO_helper rbh = new ResponseDTO_helper();
         rbh.setDate(new Date().toString());
         rbh.setParameters(arguments);
-        try {
-            MongoDB_consts mdb_const = new MongoDB_consts();
-
-            MongoClient mongoClient = new MongoClient(mdb_const.host, mdb_const.port);
-            MongoDatabase db = mongoClient.getDatabase(mdb_const.db_name);
-            MongoCollection<Document> myColection = db.getCollection(mdb_const.paymentMethod_col);
-            long machine_code = myColection.count();
-            PaymentMethodDTO paymentMethod = new PaymentMethodDTO(machine_code, arguments.get("method"));
-            Document doc = new Document("machine_code",machine_code).append("name", arguments.get("method"));
-            myColection.insertOne(doc);
-            response.add(paymentMethod);
-            responseCode = "OK";
-        } catch (Exception e) {
-            responseCode = "Error";
+        if (!(arguments.get("method") == null || arguments.get("method").equals(""))) {
+            try {
+                PaymentMethodDAO paymentmethoddao = PaymentMethodDAO.getInstance();
+                PaymentMethodDTO paymentMethod = new PaymentMethodDTO(paymentmethoddao.getIndex(), arguments.get("method"));
+                paymentmethoddao.addPaymentMethod(paymentMethod);
+                response.add(paymentMethod);
+                responseCode = "OK";
+            } catch (Exception e) {
+                responseCode = "Error";
+            }
         }
         rbh.setResponseCode(responseCode);
         rbh.setResponse(response);
@@ -54,11 +56,12 @@ public class PaymentMethodProcessor implements Processor {
     }
 
 
-//    public static void main(String[] args) {
-//        HashMap<String, String> arg = new HashMap<String, String>();
-//        arg.put("method","blah");
-//        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
-//        p.process();
-//
-//    }
+    public static void main(String[] args) {
+        HashMap<String, String> arg = new HashMap<String, String>();
+        arg.put("method", "blah");
+        PaymentMethodProcessor p = new PaymentMethodProcessor(arg);
+        p.process();
+
+    }
 }
+

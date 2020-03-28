@@ -14,7 +14,6 @@ import java.util.HashMap;
 public class GetItems implements Processor {
 
     HashMap<String, String> arguments;
-    Gson gson = new Gson();
 
     public GetItems(HashMap<String, String> arguments) {
         this.arguments = arguments;

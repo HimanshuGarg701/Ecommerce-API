@@ -10,6 +10,7 @@ public class ResponseDTO implements DTO {
     public final ArrayList<DTO> response;
 
     public ResponseDTO(String date, HashMap<String, String> params, String responseCode, ArrayList<DTO> response) {
+
         this.date = date;
         this.params = params;
         this.responseCode = responseCode;
