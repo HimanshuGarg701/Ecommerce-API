@@ -17,7 +17,7 @@ public class TransactionsDAO {
 
     private TransactionsDAO() {
     }
-    private MongoClient mongoClient = dbConnection.mongoClient;
+    private MongoClient mongoClient = dbConnection.getInstance();
     private MongoDatabase db = mongoClient.getDatabase(MongoDB_consts.db_name);
     private MongoCollection<Document> transaction_collection = db.getCollection(MongoDB_consts.transaction_col);
 

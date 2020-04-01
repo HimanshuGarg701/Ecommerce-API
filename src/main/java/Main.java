@@ -8,7 +8,7 @@ import process.*;
 import spark.Request;
 import spark.Response;
 
-public class SparkDemo {
+public class Main {
 
     public static HashMap<String, String> factory(Request req, Response res) {
         Set<String> params = req.queryParams();
@@ -23,12 +23,12 @@ public class SparkDemo {
         port(1234);
 
         //final HashMap<String, String> z;
-        get("/addItem", SparkDemo::addItem);
-        get("/addPaymentMethod", SparkDemo::addPaymentMethod);
-        get("/createTransaction", SparkDemo::createTransaction);
-        get("/listTransactions", SparkDemo::listTransactions);
-        get("/getAllPaymentMethods", SparkDemo::getPayments);
-        get("/listItems", SparkDemo::listItems);
+        get("/addItem", Main::addItem);
+        get("/addPaymentMethod", Main::addPaymentMethod);
+        get("/createTransaction", Main::createTransaction);
+        get("/listTransactions", Main::listTransactions);
+        get("/getAllPaymentMethods", Main::getPayments);
+        get("/listItems", Main::listItems);
     }
 
     private static Object addItem(Request req, Response res) {

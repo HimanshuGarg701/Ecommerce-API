@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ItemDAO {
     private static ItemDAO instanceItemDAO = new ItemDAO();
 
-    private MongoClient mongoClient = dbConnection.mongoClient;
+    private MongoClient mongoClient = dbConnection.getInstance();
     private MongoDatabase db = mongoClient.getDatabase(MongoDB_consts.db_name);
     private MongoCollection<Document> item_collection = db.getCollection(MongoDB_consts.item_col);
 
