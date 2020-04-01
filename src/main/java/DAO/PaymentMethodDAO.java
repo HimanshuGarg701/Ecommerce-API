@@ -20,7 +20,7 @@ public class PaymentMethodDAO {
     private PaymentMethodDAO() {
     }
 
-    private MongoClient mongoClient = dbConnection.mongoClient;
+    private MongoClient mongoClient = dbConnection.getInstance();
     private MongoDatabase db = mongoClient.getDatabase(MongoDB_consts.db_name);
     private MongoCollection<Document> paymentMethod_collection = db.getCollection(MongoDB_consts.paymentMethod_col);
 
